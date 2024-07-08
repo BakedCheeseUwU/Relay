@@ -20,17 +20,14 @@ const page = async () => {
   // Promise.all makes all the requests at once and not 1 by 1
   const incomingFriendRequests = await Promise.all(
     incomingSenderIds.map(async (senderId) => {
-      const sender = (await fetchRedis("get", `user:${senderId}`)) as User;
-
+      const sender = (await fetchRedis("get", `user:${senderId}`)) as string;
+      const senderParsed = JSON.parse(sender) as User;
       return {
         senderId,
-        senderEmail: sender.email,
+        senderEmail: senderParsed.email,
       };
     }),
   );
-
-  console.log(incomingFriendRequests);
-
   return (
     <main className="pt-8">
       <h1 className="font-bold text-5xl mb-8">Add a friend</h1>
