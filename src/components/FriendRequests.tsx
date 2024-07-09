@@ -28,6 +28,16 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     router.refresh();
   };
 
+  const denyFriend = async (senderId: string) => {
+    await axios.post("/api/friends/deny", { id: senderId });
+
+    setFriendRequests((prev) =>
+      prev.filter((request) => request.senderId != senderId),
+    );
+
+    router.refresh();
+  };
+
   return (
     <>
       {friendRequests.length === 0 ? (
@@ -49,6 +59,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
               aria-label="deny-friend"
               className="w-8 h-8 bg-red-600 hover:bg-red-700 grid place-items-center rounded-full transition 
                 hover:shadow-md"
+              onClick={() => denyFriend(request.senderId)}
             >
               <X className="font-semibold text-white h-3/4 w-3/4" />
             </button>
