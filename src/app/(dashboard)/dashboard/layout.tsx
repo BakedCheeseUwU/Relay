@@ -1,6 +1,7 @@
 import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOptions";
 import SignOutButton from "@/components/SignOutButton";
 import { Icon, Icons } from "@/components/icons";
+import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 import { fetchRedis } from "@/helpers/redis";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
@@ -30,6 +31,9 @@ const sidebarOption: SidebarOption[] = [
 
 const Layout = async ({ children }: layoutProps) => {
   const session = await getServerSession(authOptions);
+  if (!session) notFound();
+
+  const friends = await getFriendsByUserId(session.user.id);
 
   const unseenRequests = (
     (await fetchRedis(
@@ -38,7 +42,6 @@ const Layout = async ({ children }: layoutProps) => {
     )) as User[]
   ).length;
 
-  if (!session) notFound();
   return (
     <div className="w-full flex h-screen">
       <div
