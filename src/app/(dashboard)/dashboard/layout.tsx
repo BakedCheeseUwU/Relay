@@ -84,13 +84,13 @@ const Layout = async ({ children }: layoutProps) => {
                     </li>
                   );
                 })}
+                <li>
+                  <FriendRequestSidebarOptions
+                    sessionId={session.user.id}
+                    initialUnseenRequests={unseenRequests}
+                  />
+                </li>
               </ul>
-            </li>
-            <li>
-              <FriendRequestSidebarOptions
-                sessionId={session.user.id}
-                initialUnseenRequests={unseenRequests}
-              />
             </li>
             <li className="-mx-6 mt-auto flex items-center">
               <div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
