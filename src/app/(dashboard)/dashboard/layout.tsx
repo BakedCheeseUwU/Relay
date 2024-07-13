@@ -51,9 +51,11 @@ const Layout = async ({ children }: layoutProps) => {
         <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
           <Icons.Logo className="h-8 w-auto text-indigo-600" />
         </Link>
-        <div className="text-xs font-semibold leading-6 text-gray-400">
-          Your Chats
-        </div>
+        {friends.length > 0 ? (
+          <div className="text-xs font-semibold leading-6 text-gray-400">
+            Your Chats
+          </div>
+        ) : null}
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
             <li>chats that this user has</li>
