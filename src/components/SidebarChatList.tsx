@@ -10,10 +10,27 @@ interface SidebarChatListProps {
 }
 
 const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+
+  // check for unseen msgs by matching the senderId for each msg and the chatId
+  // rn unseenMessages includes the unseen msgs for all the friends
+  useEffect(() => {
+    if (pathname?.includes("chat")) {
+      setUnseenMessages((prev) => {
+        return prev.filter((msg) => !pathname.includes(msg.senderId));
+      });
+    }
+  }, [pathname]);
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
       {friends.sort().map((friend) => {
+        // get the unseen msg for each friend
+        const unseenMessagesCount = unseenMessages.filter((unseenMsg) => {
+          return unseenMsg.senderId === friend.id;
+        }).length;
 
         return (
           <li key={friend.id}>
@@ -23,6 +40,14 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
               text-sm leading-6 font-semibold"
             >
               {friend.name}
+              {unseenMessagesCount > 0 ? (
+                <div
+                  className="bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex
+                justify-center items-center"
+                >
+                  {unseenMessagesCount}
+                </div>
+              ) : null}
             </a>
           </li>
         );
