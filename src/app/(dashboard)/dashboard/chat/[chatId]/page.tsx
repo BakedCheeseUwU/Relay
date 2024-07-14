@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { messageArrayValidator } from "@/lib/validators/message";
+import Image from "next/image";
 
 interface pageProps {
   params: {
@@ -49,7 +50,36 @@ const page = async ({ params }: pageProps) => {
   const parsedChatPartner = JSON.parse(chatPartner);
   const initialMessages = await getChatMessages(chatId);
 
-  return <div>{params.chatId}</div>;
+  return (
+    <div className="flex flex-col flex-1 justify-between h-full max-h-[calc(100vh-6rem)]">
+      <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
+        <div className="relative flex items-center space-x-4">
+          <div className="relative">
+            <div className="relative w-8 sm:w-12 h-8 sm:h-12">
+              <Image
+                fill
+                referrerPolicy="no-referrer"
+                src={parsedChatPartner.image}
+                alt={`${parsedChatPartner.name} profile picture`}
+                className="rounded-full"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col leading-tight">
+            <div className="text-xl flex items-center">
+              <span className="text-gray-700 mr-3 font-semibold">
+                {parsedChatPartner.name}
+              </span>
+            </div>
+            <span className="text-sm text-gray-600">
+              {parsedChatPartner.email}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default page;
