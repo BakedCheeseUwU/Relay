@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { messageArrayValidator } from "@/lib/validators/message";
 import Image from "next/image";
 import Messages from "@/components/Messages";
+import ChatInput from "@/components/ChatInput";
 
 interface pageProps {
   params: {
@@ -80,6 +81,7 @@ const page = async ({ params }: pageProps) => {
         </div>
       </div>
       <Messages initialMessages={initialMessages} sessionId={session.user.id} />
+      <ChatInput chatId={chatId} chatPartner={parsedChatPartner} />
     </div>
   );
 };
