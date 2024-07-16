@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { messageArrayValidator } from "@/lib/validators/message";
 import Image from "next/image";
+import Messages from "@/components/Messages";
 
 interface pageProps {
   params: {
@@ -78,6 +79,7 @@ const page = async ({ params }: pageProps) => {
           </div>
         </div>
       </div>
+      <Messages initialMessages={initialMessages} sessionId={session.user.id} />
     </div>
   );
 };
