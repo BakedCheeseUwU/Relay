@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Message } from "@/lib/validators/message";
 import { FC, useRef, useState } from "react";
+import { format } from "date-fns";
 
 interface MessagesProps {
   initialMessages: Message[];
@@ -23,6 +24,10 @@ const Messages: FC<MessagesProps> = ({ initialMessages, sessionId }) => {
 
         const hasMessageFromSameUser =
           messages[index - 1]?.senderId === message.senderId;
+
+        const formatTimestamp = (timestamp: number) => {
+          return format(timestamp, "h:mm aaa");
+        };
 
         return (
           <div
@@ -55,7 +60,7 @@ const Messages: FC<MessagesProps> = ({ initialMessages, sessionId }) => {
                 >
                   {message.text}{" "}
                   <span className="ml-2 text-xs text-gray-400">
-                    {message.timestamp}
+                    {formatTimestamp(message.timestamp)}
                   </span>
                 </span>
               </div>
