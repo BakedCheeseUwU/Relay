@@ -56,6 +56,15 @@ export async function POST(req: Request) {
       message,
     );
 
+    // when we send a message to the event is triggered on friends side,
+    // A sends msg to B , An event is triggered on B's side with the messages
+    // and the sender info which is A, on B's client side we subscribe to this event
+    pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
+      ...message,
+      senderImg: sender.image,
+      senderName: sender.name,
+    });
+
     // send the message
     await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,

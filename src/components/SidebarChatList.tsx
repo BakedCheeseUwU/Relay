@@ -2,18 +2,65 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { FC, useEffect, useState } from "react";
-import { chatHrefConstructor } from "@/lib/utils";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import Image from "next/image";
+import { pusherClient } from "@/lib/pusher";
+import toast from "react-hot-toast";
+import UnseenChatToast from "@/components/UnseenChatToast";
 
 interface SidebarChatListProps {
   friends: User[];
   sessionId: string;
 }
 
+interface ExtendedMessage extends Message {
+  senderImg: string;
+  senderName: string;
+}
+
 const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
+
+    const newFriendHandler = () => {
+      router.refresh();
+    };
+
+    const chatHandler = (message: ExtendedMessage) => {
+      const shouldNotify =
+        pathname !==
+        `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
+
+      if (!shouldNotify) return;
+
+      // user should be notified
+      toast.custom((t) => (
+        <UnseenChatToast
+          t={t}
+          senderId={message.senderId}
+          senderName={message.senderName}
+          senderImg={message.senderImg}
+          senderMessage={message.text}
+          sessionId={sessionId}
+        />
+      ));
+
+      setUnseenMessages((prev) => [...prev, message]);
+    };
+
+    pusherClient.bind("new_message", chatHandler);
+    pusherClient.bind("new_Friend", newFriendHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`));
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
+    };
+  }, [pathname, sessionId, router]);
 
   // check for unseen msgs by matching the senderId for each msg and the chatId
   // rn unseenMessages includes the unseen msgs for all the friends
